@@ -1,0 +1,40 @@
+server:
+  port: 8080
+
+spring:
+  cloud:
+    gateway:
+      server:
+        webflux:
+          routes:
+            - id: user-service
+              uri: http://localhost:8082
+              predicates:
+                - Path=/users/**
+              filters:
+                - name: CircuitBreaker
+                  args:
+                    name: userServiceCircuit
+                    fallbackUri: forward:/fallback/user-service
+            - id: admin-service
+              uri: http://localhost:8082
+              predicates:
+                - Path=/admin/**
+              filters:
+                - name: CircuitBreaker
+                  args:
+                    name: adminServiceCircuit
+                    fallbackUri: forward:/fallback/admin-service
+
+            - id: ticket-service
+              uri: http://localhost:8083
+              predicates:
+                - Path=/ticket/**
+              filters:
+                - name: CircuitBreaker
+                  args:
+                    name: ticketServiceCircuit
+                    fallbackUri: forward:/fallback/ticket-service
+
+jwt:
+  secret: 843567893696976453275974432697R634976R738467TR678T34865R6834R8763T478378637664538745673865783678548735687R3
